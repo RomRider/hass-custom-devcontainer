@@ -109,9 +109,10 @@ function setup() {
 }
 
 function get_dev() {
-    rm -rf /usr/src/homeassistant
-    git clone --branch dev --single-branch --depth 1 https://github.com/home-assistant/core.git /usr/src/homeassistant
-    pip install --upgrade -e /usr/src/homeassistant
+    ha_dev_path="/home/vscode/.local/homeassistant"
+    rm -rf "${ha_dev_path}"
+    git clone --branch dev --single-branch --depth 1 https://github.com/home-assistant/core.git "${ha_dev_path}"
+    uv pip install --upgrade -e "${ha_dev_path}"
 }
 
 function run() {
@@ -121,6 +122,9 @@ function run() {
 if [[ -f "$ENV_FILE" ]]; then
     source "$ENV_FILE"
 fi
+
+# shellcheck source=/dev/null
+source "$VIRTUAL_ENV/bin/activate"
 
 case $1 in
     setup-dev)
