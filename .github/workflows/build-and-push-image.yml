@@ -34,5 +34,7 @@ jobs:
         platforms: linux/amd64,linux/arm64
         push: true
         tags: romrider/hass-custom-devcontainer:latest,romrider/hass-custom-devcontainer:${{ steps.get_ha_version.outputs.ha_version }}
+        build-args: |
+          HA_VERSION=${{ steps.get_ha_version.outputs.ha_version }}
         cache-from: type=gha
         cache-to: type=gha,mode=max
