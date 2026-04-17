@@ -9,7 +9,7 @@ docker run --rm -it \
     -v $(pwd):/config/www/workspace \
     -e LOVELACE_LOCAL_FILES="myplugin.js"
     -e LOVELACE_PLUGINS="thomasloven/lovelace-card-mod thomasloven/lovelace-auto-entities custom-cards/button-card" \
-    thomasloven/hass-custom-devcontainer
+    romrider/hass-custom-devcontainer
 ```
 
 The default action of the image is to run `container`, which will
@@ -55,11 +55,18 @@ container launch
 ```
 Launch Home Assistant with `hass -c /config -v`
 
+```bash
+container update
+# or
+container update 2026.4.2
+```
+Update Home Assistant's version (latest or defined version)
+
 ## devcontainer.json example
 
 ```json
 {
-  "image": "thomasloven/hass-custom-devcontainer",
+  "image": "romrider/hass-custom-devcontainer:latest",
   "postCreateCommand": "container setup && npm add",
   "forwardPorts": [8123],
   "mounts": [
