@@ -119,6 +119,15 @@ function run() {
     hass -c /config -v
 }
 
+function get_ha_version() {
+    version="$1"
+    if [[ -z "$version" ]]; then
+       uv pip install --upgrade homeassistant
+    else
+        uv pip install --upgrade "homeassistant==${1}"
+    fi
+}
+
 if [[ -f "$ENV_FILE" ]]; then
     source "$ENV_FILE"
 fi
@@ -141,6 +150,9 @@ case $1 in
         get_dev
         setup
         run
+        ;;
+    update)
+        get_ha_version "$2"
         ;;
     *)
         setup
