@@ -101,6 +101,7 @@ function install_hacs() {
 }
 
 function setup() {
+    chown vscode:vscode -R /config
     ensure_hass_config
     create_hass_user
     bypass_onboarding
@@ -117,6 +118,10 @@ function get_dev() {
 
 function run() {
     hass -c /config -v
+}
+
+function run-debug() {
+    hass -c /config -v --debug
 }
 
 function get_ha_version() {
@@ -150,6 +155,10 @@ case $1 in
         get_dev
         setup
         run
+        ;;
+    start-debug)
+        setup
+        run-debug
         ;;
     update)
         get_ha_version "$2"
