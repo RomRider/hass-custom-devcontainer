@@ -48,8 +48,9 @@ ARG HA_VERSION
 RUN echo "${HA_VERSION}" > /config/.HA_VERSION
 
 RUN uv venv --python "${PYTHON_VERSION}" $VIRTUAL_ENV
+ADD --chown=vscode:vscode https://raw.githubusercontent.com/home-assistant/core/refs/tags/${HA_VERSION}/requirements_all.txt /tmp/requirements_all.txt
 COPY requirements.txt /tmp/requirements.txt
-RUN source "$VIRTUAL_ENV/bin/activate" && uv pip install -r /tmp/requirements.txt
+RUN source "$VIRTUAL_ENV/bin/activate" && uv pip install -r /tmp/requirements.txt && uv pip install -r /tmp/requirements_all.txt
 ENV PATH="$VIRTUAL_ENV/bin:$PATH"
 
 COPY /bin /usr/local/bin

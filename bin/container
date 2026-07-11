@@ -101,7 +101,7 @@ function install_hacs() {
 }
 
 function setup() {
-    chown vscode:vscode -R /config
+    sudo chown vscode:vscode -R /config
     ensure_hass_config
     create_hass_user
     bypass_onboarding
