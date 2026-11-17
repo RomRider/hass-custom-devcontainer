@@ -4,6 +4,7 @@ on: pull_request
 permissions:
   contents: write
   pull-requests: write
+  actions: write
 
 jobs:
   dependabot:
@@ -17,9 +18,32 @@ jobs:
           github-token: "${{ secrets.GITHUB_TOKEN }}"
       - name: Enable auto-merge for Dependabot PRs
         if: contains(steps.metadata.outputs.dependency-names, 'homeassistant')
+        run: gh pr merge --auto --merge "$PR_URL"
+        env:
+          PR_URL: ${{github.event.pull_request.html_url}}
+          GH_TOKEN: ${{secrets.GITHUB_TOKEN}}
+      # Merges made with GITHUB_TOKEN don't trigger the push-based build,
+      # so dispatch it ourselves, but only once the PR has actually landed
+      # on master (auto-merge may wait on required checks).
+      - name: Wait for merge and trigger image build
+        if: contains(steps.metadata.outputs.dependency-names, 'homeassistant')
+        timeout-minutes: 60
         run: |
-          gh pr merge --auto --merge "$PR_URL"
-          gh workflow run build-and-push-image.yml --repo "RomRider/hass-custom-devcontainer" --ref "master"
+          while true; do
+            state=$(gh pr view "$PR_URL" --json state --jq .state)
+            case "$state" in
+              MERGED)
+                gh workflow run build-and-push-image.yml --repo "$GITHUB_REPOSITORY" --ref master
+                exit 0
+                ;;
+              CLOSED)
+                echo "::notice::PR was closed without merging; skipping image build"
+                exit 0
+                ;;
+            esac
+            echo "PR state is $state, waiting..."
+            sleep 30
+          done
         env:
           PR_URL: ${{github.event.pull_request.html_url}}
           GH_TOKEN: ${{secrets.GITHUB_TOKEN}}
